@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "PRITECH Tasks",
+    "slug": "pritech-tasks",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "pritechtasks",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#F5F5F7"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F5F5F7"
+      }
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}
