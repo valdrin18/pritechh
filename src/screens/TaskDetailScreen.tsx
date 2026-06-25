@@ -2,7 +2,7 @@ import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton } from "../components/PrimaryButton";
 import { formatDate } from "../components/TaskCard";
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 import type { Task } from "../types";
 
 type TaskDetailScreenProps = {
@@ -18,6 +18,9 @@ export function TaskDetailScreen({
   onToggleTask,
   task
 }: TaskDetailScreenProps) {
+  const sourceLabel =
+    task.source === "api" ? "Live API" : task.source === "sample" ? "Starter" : "Personal";
+
   const confirmDelete = () => {
     Alert.alert("Delete task?", "This action removes the task from local storage.", [
       { text: "Cancel", style: "cancel" },
@@ -41,10 +44,19 @@ export function TaskDetailScreen({
         </View>
       </View>
 
-      <View style={styles.hero}>
+      <View style={styles.heroPanel}>
         <Text style={styles.kicker}>{task.source === "api" ? "PUBLIC API TASK" : "PERSONAL TASK"}</Text>
         <Text style={styles.title}>{task.title}</Text>
-        <Text style={styles.date}>Created {formatDate(task.createdAt)}</Text>
+        <View style={styles.metaGrid}>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Created</Text>
+            <Text style={styles.metaValue}>{formatDate(task.createdAt)}</Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={styles.metaLabel}>Source</Text>
+            <Text style={styles.metaValue}>{sourceLabel}</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.card}>
@@ -54,11 +66,14 @@ export function TaskDetailScreen({
 
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Status</Text>
-        <Text style={styles.statusCopy}>
-          {task.completed
-            ? "This task is currently marked as completed."
-            : "This task is still open and ready for action."}
-        </Text>
+        <View style={styles.statusRow}>
+          <View style={[styles.statusMark, task.completed ? styles.statusMarkDone : styles.statusMarkOpen]} />
+          <Text style={styles.statusCopy}>
+            {task.completed
+              ? "Completed and safely stored on this device."
+              : "Open and ready for the next action."}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.actions}>
@@ -75,10 +90,10 @@ export function TaskDetailScreen({
 
 const styles = StyleSheet.create({
   actions: {
-    gap: spacing.sm
+    gap: spacing.md
   },
   badge: {
-    borderRadius: radius.md,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm
   },
@@ -99,52 +114,97 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   card: {
+    backgroundColor: colors.surfaceRaised,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.md,
+    padding: spacing.lg,
+    ...shadows.card
+  },
+  cardLabel: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: "900",
+    textTransform: "uppercase"
+  },
+  content: {
+    gap: spacing.xl,
+    padding: spacing.lg,
+    paddingBottom: 44
+  },
+  description: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: "700",
+    lineHeight: 30
+  },
+  heroPanel: {
+    backgroundColor: colors.backgroundSoft,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.lg,
+    padding: spacing.lg,
+    ...shadows.card
+  },
+  kicker: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 0
+  },
+  metaGrid: {
+    flexDirection: "row",
+    gap: spacing.sm
+  },
+  metaItem: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
     borderRadius: radius.md,
     borderWidth: 1,
-    gap: spacing.sm,
-    padding: spacing.lg
+    flex: 1,
+    gap: spacing.xs,
+    padding: spacing.md
   },
-  cardLabel: {
+  metaLabel: {
     color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: "800",
-    textTransform: "uppercase"
+    fontSize: 12,
+    fontWeight: "900"
   },
-  content: {
-    gap: spacing.lg,
-    padding: spacing.lg,
-    paddingBottom: 44
-  },
-  date: {
-    color: colors.textMuted,
-    fontSize: 15,
-    fontWeight: "700"
-  },
-  description: {
+  metaValue: {
     color: colors.text,
-    fontSize: 18,
-    lineHeight: 27
-  },
-  hero: {
-    gap: spacing.sm
-  },
-  kicker: {
-    color: colors.blue,
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0
+    fontSize: 15,
+    fontWeight: "900"
   },
   statusCopy: {
     color: colors.textMuted,
-    fontSize: 16,
-    lineHeight: 24
+    flex: 1,
+    fontSize: 17,
+    fontWeight: "700",
+    lineHeight: 25
+  },
+  statusMark: {
+    borderRadius: radius.pill,
+    height: 38,
+    width: 38
+  },
+  statusMarkDone: {
+    backgroundColor: colors.green
+  },
+  statusMarkOpen: {
+    backgroundColor: colors.amber
+  },
+  statusRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.md
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    fontWeight: "900"
+    fontSize: 42,
+    fontWeight: "900",
+    lineHeight: 47
   },
   topBar: {
     alignItems: "center",

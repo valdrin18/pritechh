@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 
 type PrimaryButtonProps = {
   label: string;
@@ -29,15 +29,15 @@ export function PrimaryButton({ label, onPress, tone = "primary", style }: Prima
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderRadius: radius.md,
+    borderRadius: radius.pill,
     justifyContent: "center",
-    minHeight: 46,
+    minHeight: 50,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm
   },
   label: {
-    fontSize: 16,
-    fontWeight: "700"
+    fontSize: 15,
+    fontWeight: "800"
   },
   pressed: {
     opacity: 0.72,
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
 
 const toneStyles = StyleSheet.create({
   primary: {
-    backgroundColor: colors.blue
+    backgroundColor: colors.text,
+    ...shadows.soft
   },
   quiet: {
     backgroundColor: colors.surfaceMuted

@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 
 import { Field } from "../components/Field";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { colors, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 import type { DraftTask } from "../types";
 
 type AddTaskScreenProps = {
@@ -47,11 +47,15 @@ export function AddTaskScreen({ initialDraft, onCancel, onCreateTask }: AddTaskS
       style={styles.keyboard}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <View style={styles.topBar}>
+          <PrimaryButton label="Cancel" onPress={onCancel} tone="quiet" />
+        </View>
+
         <View style={styles.header}>
           <Text style={styles.kicker}>{initialDraft?.source === "api" ? "API IDEA" : "NEW TASK"}</Text>
-          <Text style={styles.title}>Create Task</Text>
+          <Text style={styles.title}>Shape the next move</Text>
           <Text style={styles.subtitle}>
-            Keep it short, specific, and easy to finish later.
+            A good task should feel obvious when you return to it.
           </Text>
         </View>
 
@@ -77,7 +81,6 @@ export function AddTaskScreen({ initialDraft, onCancel, onCreateTask }: AddTaskS
 
         <View style={styles.actions}>
           <PrimaryButton label="Create task" onPress={handleSubmit} />
-          <PrimaryButton label="Cancel" onPress={onCancel} tone="quiet" />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -108,28 +111,39 @@ const styles = StyleSheet.create({
     paddingBottom: 44
   },
   form: {
-    gap: spacing.lg
+    backgroundColor: colors.backgroundSoft,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.lg,
+    padding: spacing.lg,
+    ...shadows.card
   },
   header: {
-    gap: spacing.xs
+    gap: spacing.sm
   },
   keyboard: {
     flex: 1
   },
   kicker: {
-    color: colors.blue,
-    fontSize: 13,
-    fontWeight: "800",
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: "900",
     letterSpacing: 0
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: 16,
-    lineHeight: 23
+    fontSize: 17,
+    fontWeight: "700",
+    lineHeight: 25
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    fontWeight: "900"
+    fontSize: 43,
+    fontWeight: "900",
+    lineHeight: 48
+  },
+  topBar: {
+    alignItems: "flex-start"
   }
 });

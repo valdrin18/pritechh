@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 import type { TaskStatus } from "../types";
 
 const options: Array<{ label: string; value: TaskStatus }> = [
@@ -38,27 +38,30 @@ export function SegmentedControl({ value, onChange }: SegmentedControlProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surfaceMuted,
-    borderRadius: radius.md,
+    borderColor: colors.border,
+    borderRadius: radius.pill,
+    borderWidth: 1,
     flexDirection: "row",
     gap: spacing.xs,
-    padding: 4
+    padding: 5
   },
   label: {
     color: colors.textMuted,
     fontSize: 14,
-    fontWeight: "700"
+    fontWeight: "800"
   },
   labelActive: {
     color: colors.text
   },
   option: {
     alignItems: "center",
-    borderRadius: radius.sm,
+    borderRadius: radius.pill,
     flex: 1,
-    minHeight: 36,
+    minHeight: 42,
     justifyContent: "center"
   },
   optionActive: {
-    backgroundColor: colors.surface
+    backgroundColor: colors.surface,
+    ...shadows.soft
   }
 });

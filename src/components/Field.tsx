@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, TextInputProps, View } from "react-native";
 
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 
 type FieldProps = TextInputProps & {
   error?: string;
@@ -28,7 +28,7 @@ export function Field({ error, label, style, ...inputProps }: FieldProps) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.xs
+    gap: spacing.sm
   },
   error: {
     color: colors.red,
@@ -36,26 +36,28 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   input: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm
+    fontSize: 17,
+    minHeight: 58,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    ...shadows.soft
   },
   inputError: {
     borderColor: colors.red
   },
   label: {
-    color: colors.text,
+    color: colors.textMuted,
     fontSize: 14,
-    fontWeight: "700"
+    fontWeight: "800",
+    textTransform: "uppercase"
   },
   multiline: {
-    minHeight: 118,
+    minHeight: 160,
     textAlignVertical: "top"
   }
 });

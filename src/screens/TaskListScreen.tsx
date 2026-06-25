@@ -12,7 +12,7 @@ import {
 import { PrimaryButton } from "../components/PrimaryButton";
 import { SegmentedControl } from "../components/SegmentedControl";
 import { TaskCard } from "../components/TaskCard";
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 import type { DraftTask, Task, TaskIdea, TaskStatus } from "../types";
 
 type TaskListScreenProps = {
@@ -59,29 +59,67 @@ export function TaskListScreen({
 
   const completedCount = tasks.filter((task) => task.completed).length;
   const activeCount = tasks.length - completedCount;
+  const completionRate = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
+  const nextTask = tasks.find((task) => !task.completed) ?? tasks[0] ?? null;
+  const todayLabel = new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "long"
+  }).format(new Date());
 
   return (
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.kicker}>PRITECH</Text>
-          <Text style={styles.title}>Personal Tasks</Text>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.heroPanel}>
+        <View style={styles.heroTop}>
+          <View style={styles.heroCopy}>
+            <Text style={styles.kicker}>PRITECH TASKS</Text>
+            <Text style={styles.title}>Today</Text>
+            <Text style={styles.subtitle}>{todayLabel}</Text>
+          </View>
+          <Pressable
+            accessibilityLabel="Add task"
+            accessibilityRole="button"
+            onPress={onAddPress}
+            style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.addButtonText}>+</Text>
+          </Pressable>
         </View>
-        <PrimaryButton label="Add" onPress={onAddPress} />
-      </View>
 
-      <View style={styles.summaryGrid}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryNumber}>{tasks.length}</Text>
-          <Text style={styles.summaryLabel}>Total</Text>
+        <View style={styles.focusRow}>
+          <View style={styles.progressCard}>
+            <Text style={styles.progressNumber}>{completionRate}%</Text>
+            <Text style={styles.progressLabel}>Complete</Text>
+          </View>
+          <View style={styles.nextCard}>
+            <Text style={styles.nextLabel}>Next up</Text>
+            <Text numberOfLines={2} style={styles.nextTitle}>
+              {nextTask ? nextTask.title : "Create your first task"}
+            </Text>
+            <Text style={styles.nextMeta}>
+              {activeCount > 0 ? `${activeCount} open` : "Nothing open"}
+            </Text>
+          </View>
         </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryNumber}>{activeCount}</Text>
-          <Text style={styles.summaryLabel}>Open</Text>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryNumber}>{completedCount}</Text>
-          <Text style={styles.summaryLabel}>Done</Text>
+
+        <View style={styles.summaryGrid}>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>{tasks.length}</Text>
+            <Text style={styles.summaryLabel}>Total</Text>
+          </View>
+          <View style={styles.summaryDivider} />
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>{activeCount}</Text>
+            <Text style={styles.summaryLabel}>Open</Text>
+          </View>
+          <View style={styles.summaryDivider} />
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryNumber}>{completedCount}</Text>
+            <Text style={styles.summaryLabel}>Done</Text>
+          </View>
         </View>
       </View>
 
@@ -99,8 +137,11 @@ export function TaskListScreen({
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Public API Ideas</Text>
-        <Pressable accessibilityRole="button" onPress={onRefreshIdeas}>
+        <View>
+          <Text style={styles.sectionTitle}>Suggestions</Text>
+          <Text style={styles.sectionSubtitle}>Fresh prompts for momentum</Text>
+        </View>
+        <Pressable accessibilityRole="button" onPress={onRefreshIdeas} style={styles.refreshButton}>
           <Text style={styles.refresh}>Refresh</Text>
         </Pressable>
       </View>
@@ -134,6 +175,10 @@ export function TaskListScreen({
                   }
                   style={({ pressed }) => [styles.idea, pressed && styles.ideaPressed]}
                 >
+                  <View style={styles.ideaTopLine}>
+                    <Text style={styles.ideaBadge}>API</Text>
+                    <Text style={styles.ideaAction}>Use</Text>
+                  </View>
                   <Text numberOfLines={1} style={styles.ideaTitle}>
                     {idea.title}
                   </Text>
@@ -147,7 +192,10 @@ export function TaskListScreen({
       </ScrollView>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Tasks</Text>
+        <View>
+          <Text style={styles.sectionTitle}>Task Stack</Text>
+          <Text style={styles.sectionSubtitle}>The work ahead, calmly arranged</Text>
+        </View>
         <Text style={styles.count}>{filteredTasks.length} shown</Text>
       </View>
 
@@ -176,27 +224,43 @@ export function TaskListScreen({
 }
 
 const styles = StyleSheet.create({
+  addButton: {
+    alignItems: "center",
+    backgroundColor: colors.text,
+    borderRadius: radius.pill,
+    height: 58,
+    justifyContent: "center",
+    width: 58,
+    ...shadows.card
+  },
+  addButtonText: {
+    color: colors.surface,
+    fontSize: 34,
+    fontWeight: "500",
+    lineHeight: 38
+  },
   content: {
-    gap: spacing.lg,
+    gap: spacing.xl,
     padding: spacing.lg,
-    paddingBottom: 44
+    paddingBottom: 48
   },
   controls: {
-    gap: spacing.sm
+    gap: spacing.md
   },
   count: {
     color: colors.textMuted,
     fontSize: 14,
-    fontWeight: "700"
+    fontWeight: "800"
   },
   empty: {
     alignItems: "center",
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    gap: spacing.sm,
-    padding: spacing.xl
+    gap: spacing.md,
+    padding: spacing.xxl,
+    ...shadows.card
   },
   emptyButton: {
     marginTop: spacing.sm
@@ -209,27 +273,61 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontSize: 20,
-    fontWeight: "800"
+    fontSize: 22,
+    fontWeight: "900"
   },
-  header: {
+  focusRow: {
     alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.md
+  },
+  heroCopy: {
+    flex: 1
+  },
+  heroPanel: {
+    backgroundColor: colors.backgroundSoft,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.xl,
+    overflow: "hidden",
+    padding: spacing.lg,
+    ...shadows.card
+  },
+  heroTop: {
+    alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "space-between"
   },
   idea: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    gap: spacing.xs,
-    padding: spacing.md,
-    width: 230
+    gap: spacing.sm,
+    padding: spacing.lg,
+    width: 258,
+    ...shadows.soft
+  },
+  ideaAction: {
+    color: colors.blue,
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  ideaBadge: {
+    backgroundColor: colors.violetMuted,
+    borderRadius: radius.pill,
+    color: colors.violet,
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    overflow: "hidden"
   },
   ideaDescription: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19
+    fontSize: 14,
+    lineHeight: 21
   },
   ideaPressed: {
     opacity: 0.75
@@ -241,13 +339,13 @@ const styles = StyleSheet.create({
   },
   ideaState: {
     alignItems: "center",
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     flexDirection: "row",
     gap: spacing.sm,
-    padding: spacing.md
+    padding: spacing.lg
   },
   ideaStateText: {
     color: colors.textMuted,
@@ -256,69 +354,150 @@ const styles = StyleSheet.create({
   },
   ideaTitle: {
     color: colors.text,
-    fontSize: 15,
-    fontWeight: "800"
+    fontSize: 17,
+    fontWeight: "900",
+    lineHeight: 22
   },
-  kicker: {
-    color: colors.blue,
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
-  refresh: {
-    color: colors.blue,
-    fontSize: 15,
-    fontWeight: "800"
-  },
-  search: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: spacing.md
-  },
-  sectionHeader: {
+  ideaTopLine: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between"
   },
-  sectionTitle: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: "800"
+  kicker: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 0
   },
-  summaryCard: {
+  nextCard: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     flex: 1,
-    gap: 2,
-    padding: spacing.md
+    minHeight: 138,
+    padding: spacing.lg
+  },
+  nextLabel: {
+    color: colors.textMuted,
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  nextMeta: {
+    color: colors.violet,
+    fontSize: 13,
+    fontWeight: "900",
+    marginTop: spacing.sm
+  },
+  nextTitle: {
+    color: colors.text,
+    fontSize: 19,
+    fontWeight: "900",
+    lineHeight: 25,
+    marginTop: spacing.xs
+  },
+  pressed: {
+    opacity: 0.78,
+    transform: [{ scale: 0.98 }]
+  },
+  progressCard: {
+    alignItems: "center",
+    backgroundColor: colors.text,
+    borderRadius: radius.lg,
+    height: 138,
+    justifyContent: "center",
+    width: 118
+  },
+  progressLabel: {
+    color: "#D9D4CA",
+    fontSize: 12,
+    fontWeight: "800",
+    marginTop: spacing.xs
+  },
+  progressNumber: {
+    color: colors.surface,
+    fontSize: 32,
+    fontWeight: "900"
+  },
+  refresh: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: "900"
+  },
+  refreshButton: {
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm
+  },
+  search: {
+    backgroundColor: colors.surfaceRaised,
+    borderColor: colors.border,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    color: colors.text,
+    fontSize: 17,
+    minHeight: 56,
+    paddingHorizontal: spacing.lg,
+    ...shadows.soft
+  },
+  sectionHeader: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  sectionSubtitle: {
+    color: colors.textMuted,
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 3
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontSize: 24,
+    fontWeight: "900"
+  },
+  subtitle: {
+    color: colors.textMuted,
+    fontSize: 18,
+    fontWeight: "700",
+    marginTop: spacing.xs
+  },
+  summaryDivider: {
+    alignSelf: "stretch",
+    backgroundColor: colors.border,
+    width: 1
   },
   summaryGrid: {
+    alignItems: "center",
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.lg,
     flexDirection: "row",
-    gap: spacing.sm
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.md
+  },
+  summaryItem: {
+    alignItems: "center",
+    flex: 1,
+    gap: 2
   },
   summaryLabel: {
     color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: "700"
+    fontSize: 12,
+    fontWeight: "800"
   },
   summaryNumber: {
     color: colors.text,
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "900"
   },
   taskList: {
-    gap: spacing.md
+    gap: spacing.lg
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    fontWeight: "900"
+    fontSize: 48,
+    fontWeight: "900",
+    lineHeight: 54
   }
 });

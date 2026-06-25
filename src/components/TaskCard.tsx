@@ -1,8 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing } from "../theme";
+import { colors, radius, shadows, spacing } from "../theme";
 import type { Task } from "../types";
-import { PrimaryButton } from "./PrimaryButton";
 
 type TaskCardProps = {
   task: Task;
@@ -11,29 +10,46 @@ type TaskCardProps = {
 };
 
 export function TaskCard({ onPress, onToggle, task }: TaskCardProps) {
+  const sourceLabel =
+    task.source === "api" ? "Live API" : task.source === "sample" ? "Starter" : "Personal";
+
   return (
     <Pressable
       accessibilityRole="button"
       onPress={() => onPress(task.id)}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
-      <View style={styles.topRow}>
-        <View style={[styles.statusDot, task.completed ? styles.statusDone : styles.statusOpen]} />
-        <Text numberOfLines={1} style={[styles.title, task.completed && styles.titleDone]}>
-          {task.title}
-        </Text>
+      <View style={styles.header}>
+        <Pressable
+          accessibilityLabel={task.completed ? "Mark task as open" : "Mark task as completed"}
+          accessibilityRole="button"
+          onPress={(event) => {
+            event.stopPropagation();
+            onToggle(task.id);
+          }}
+          style={[styles.check, task.completed ? styles.checkDone : styles.checkOpen]}
+        >
+          <View style={task.completed ? styles.checkDotDone : styles.checkDotOpen} />
+        </Pressable>
+        <View style={styles.titleBlock}>
+          <Text numberOfLines={2} style={[styles.title, task.completed && styles.titleDone]}>
+            {task.title}
+          </Text>
+          <Text style={styles.meta}>{formatDate(task.createdAt)} - {sourceLabel}</Text>
+        </View>
       </View>
+
       <Text numberOfLines={2} style={styles.description}>
         {task.description}
       </Text>
+
       <View style={styles.footer}>
-        <Text style={styles.meta}>{formatDate(task.createdAt)}</Text>
-        <PrimaryButton
-          label={task.completed ? "Reopen" : "Done"}
-          onPress={() => onToggle(task.id)}
-          style={styles.toggle}
-          tone={task.completed ? "quiet" : "success"}
-        />
+        <View style={[styles.statusPill, task.completed ? styles.statusDone : styles.statusOpen]}>
+          <Text style={[styles.statusText, task.completed ? styles.statusTextDone : styles.statusTextOpen]}>
+            {task.completed ? "Completed" : "In progress"}
+          </Text>
+        </View>
+        <Text style={styles.detailCue}>Details</Text>
       </View>
     </Pressable>
   );
@@ -48,63 +64,100 @@ export const formatDate = (date: string) =>
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    gap: spacing.sm,
-    padding: spacing.md,
-    shadowColor: colors.shadow,
-    shadowOffset: { height: 6, width: 0 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14
+    gap: spacing.md,
+    padding: spacing.lg,
+    ...shadows.card
+  },
+  check: {
+    alignItems: "center",
+    borderRadius: radius.pill,
+    height: 42,
+    justifyContent: "center",
+    width: 42
+  },
+  checkDone: {
+    backgroundColor: colors.green
+  },
+  checkDotDone: {
+    backgroundColor: colors.surface,
+    borderRadius: 6,
+    height: 12,
+    width: 12
+  },
+  checkDotOpen: {
+    backgroundColor: colors.blue,
+    borderRadius: 6,
+    height: 12,
+    width: 12
+  },
+  checkOpen: {
+    backgroundColor: colors.blueMuted
   },
   description: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22
+    fontSize: 16,
+    lineHeight: 24
+  },
+  detailCue: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: "800"
   },
   footer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between"
   },
+  header: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: spacing.md
+  },
   meta: {
     color: colors.textMuted,
     fontSize: 13,
-    fontWeight: "600"
+    fontWeight: "700",
+    marginTop: spacing.xs
   },
   pressed: {
-    opacity: 0.82
-  },
-  statusDot: {
-    borderRadius: 5,
-    height: 10,
-    width: 10
+    opacity: 0.82,
+    transform: [{ scale: 0.995 }]
   },
   statusDone: {
-    backgroundColor: colors.green
+    backgroundColor: colors.greenMuted
   },
   statusOpen: {
-    backgroundColor: colors.blue
+    backgroundColor: colors.amberMuted
+  },
+  statusPill: {
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs
+  },
+  statusText: {
+    fontSize: 13,
+    fontWeight: "800"
+  },
+  statusTextDone: {
+    color: "#248A3D"
+  },
+  statusTextOpen: {
+    color: "#A45F00"
   },
   title: {
     color: colors.text,
-    flex: 1,
-    fontSize: 18,
-    fontWeight: "800"
+    fontSize: 20,
+    fontWeight: "900",
+    lineHeight: 25
+  },
+  titleBlock: {
+    flex: 1
   },
   titleDone: {
-    color: colors.textMuted,
-    textDecorationLine: "line-through"
-  },
-  toggle: {
-    minHeight: 36,
-    paddingHorizontal: spacing.md
-  },
-  topRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.sm
+    color: colors.textMuted
   }
 });
