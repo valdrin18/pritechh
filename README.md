@@ -26,6 +26,8 @@ Expo Go mobile app for the PRITECH React Native technical task.
 
 ## Setup
 
+Use Node.js 20.19.4 or newer. Expo SDK 54 requires Node 20+.
+
 Install dependencies:
 
 ```bash
@@ -39,6 +41,12 @@ npm start
 ```
 
 Then scan the QR code with Expo Go on iOS or Android.
+
+For testing from a different network, start a tunnel:
+
+```bash
+npm run tunnel
+```
 
 You can also run:
 
