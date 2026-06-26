@@ -73,14 +73,6 @@ https://jsonplaceholder.typicode.com/todos?_limit=4
 
 Tapping an API idea opens the create-task screen with a prefilled title and description.
 
-## Screenshots
-
-Preview screenshots are included in `docs/screenshots/`.
-
-| Task list | Task details |
-| --- | --- |
-| ![Task list screen](docs/screenshots/home.png) | ![Task details screen](docs/screenshots/detail.png) |
-
 ## Notes
 
 The app is intentionally small and dependency-light. Navigation is implemented with simple screen state because the assignment asks for simple navigation and does not require a full navigation framework.
